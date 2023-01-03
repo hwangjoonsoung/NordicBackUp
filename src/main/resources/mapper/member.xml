@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nordic.repository.member.MemberMapper">
+
+
+
+	<select id="findAll" resultType="MemberDto">
+		select * from member
+	</select>
+	
+	<select id="pointArrange" parameterType="String" resultType="MemberDto">
+		select * from member
+		<if test="pointArrange == 'totalasc' ">
+			order by total_point asc
+		</if>
+		<if test="pointArrange == 'totaldesc' ">
+			order by total_point desc
+		</if>
+		<if test="pointArrange == 'reqasc' ">
+			order by req_point asc
+		</if>
+		<if test="pointArrange == 'reqdesc' ">
+			order by req_point desc
+		</if>
+		<if test="pointArrange == 'useasc' ">
+			order by use_point asc
+		</if>
+		<if test="pointArrange == 'usedesc' ">
+			order by use_point desc
+		</if>
+	</select>
+	
+	<select id="memberState" parameterType="String" resultType="MemberDto">
+		select * from member where
+		<if test="memberState == 'approvaly' ">
+			approval_yn = 'Y'
+		</if>
+		<if test="memberState == 'approvaln' ">
+			approval_yn = 'N'
+		</if>
+		<if test="memberState == 'delmember' ">
+			stop_yn = 'Y'
+		</if>
+	</select>
+	
+	<update id="doApproval" parameterType="MemberDto">
+		update member set
+			approval_yn = 'Y',
+			approval_date = sysdate(),
+			remark = '가입승인',
+			admin_yn = 'N',
+			stop_yn = 'N',
+			update_member = '관리자',
+			update_date = sysdate()
+		where member_code = #{member_code}
+	</update>
+	
+	<update id="doAdmin" parameterType="MemberDto">
+		update member set
+			admin_yn = 'Y',
+			admin_date = sysdate(),
+			approval_yn = 'Y',
+			stop_yn = 'N',
+			remark = '관리자 등록',
+			update_member = '관리자',
+			update_date = sysdate()
+		where member_code = #{member_code}
+	</update>
+	
+	<update id="doUnadmin" parameterType="MemberDto">
+		update member set
+			admin_yn = 'N',
+			admin_date = #{admin_date, jdbcType=DATE},
+			approval_yn = 'Y',
+			stop_yn = 'N',
+			remark = '관리자 해제',
+			update_member = '관리자',
+			update_date = sysdate()
+		where member_code = #{member_code}
+	</update>
+	
+	<select id="findAdmins" resultType="MemberDto">
+		select * from member where admin_yn = 'Y'
+	</select>
+	
+	<select id="findOne" parameterType="String" resultType="MemberDto">
+		select * from member where member_code = #{member_code}
+	</select>
+	
+	<insert id="mbrRegister" parameterType="MemberDto">
+		insert into member values(
+			#{member_code}, #{member_name}, #{mobile_no}, #{address}, 
+			#{age}, #{sex}, 'Y', #{password}, 'N', #{approval_date,jdbcType=DATE}, 'N', 
+			#{stop_date,jdbcType=DATE}, 'N', #{admin_date,jdbcType=DATE}, 0, 0, 0, 
+			0, #{member_code}, sysdate(),
+			#{member_code}, sysdate()
+			<!-- #{member_code}, #{member_name}, #{mobile_no}, #{address}, 
+			#{age}, #{sex}, #{agree_yn}, #{password}, #{approval_yn}, sysdate(), 'N', 
+			DATE_format(#{stop_date,jdbcType=DATE}, '%Y-%m-%d %H:%i:%s'), 'N', 
+			DATE_format(#{admin_date,jdbcType=DATE}, '%Y-%m-%d %H:%i:%s'), 0, 0, 0, 
+			#{remark}, #{create_member}, sysdate(),
+			#{update_member}, sysdate() -->
+		)
+	</insert>
+	
+	<update id="modifyOne" parameterType="MemberModifyDto">
+		update member set 
+			member_name = #{member_name},
+			mobile_no = #{mobile_no},
+			address = #{address},
+			age = #{age},
+			sex = #{sex},
+			password = #{password},
+			remark = '회원정보수정',
+			update_member = '관리자',
+			update_date = sysdate()
+		where member_code = #{member_code}
+	</update>
+	
+	<update id="delOne" parameterType="MemberDto">
+		update member set
+			approval_yn = 'N',
+			approval_date = #{approval_date},
+			stop_yn = 'Y',
+			stop_date = sysdate(),
+			admin_yn = 'N',
+			admin_date = sysdate(),
+			remark = '탈퇴',
+			update_member = '관리자',
+			update_date = sysdate()
+		where member_code = #{member_code}
+	</update>
+	
+	<update id="undoDelete" parameterType="MemberDto">
+		update member set
+			approval_yn = 'N',
+			approval_date = #{approval_date, jdbcType=DATE},
+			stop_yn = 'N',
+			stop_date = #{stop_date, jdbcType=DATE},
+			admin_yn = 'N',
+			admin_date = #{admin_date,jdbcType=DATE},
+			remark = '탈퇴 철회',
+			update_member = '관리자',
+			update_date = sysdate()
+		where member_code = #{member_code}
+	</update>
+	
+	<select id="doSearch" parameterType="SearchDto" resultType="MemberDto">
+		select * from member
+		<where>
+			<if test="keyword != null and search != null">
+				${search} like CONCAT('%',#{keyword},'%')
+			</if>
+		</where>
+	</select>
+	
+	<select id ="findMe" resultType="MemberDto">
+		select * from where member_code = #{member_code}
+	</select>
+
+
+</mapper>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nordic.repository.requests.RequestsMapper">
+<insert id="createRequest" parameterType="goodsreq" useGeneratedKeys="true" keyProperty="request_no">
+insert into point_goods_req (goods_no,member_code,point,remark,create_member,use_yn) 
+value (#{goods_no}, #{member_code}, #{point},#{remark,jdbcType=VARCHAR},#{create_member},#{use_yn})
+</insert>
+
+<select id="fineOneRequest" parameterType="int" resultType="goodsreq">
+select * from point_goods_req where request_no = #{no}
+</select>
+
+<update id="acceptRequest" parameterType="goodsreq">
+update point_goods_req set confirm_yn = #{confirm_yn}, confirm_member = #{confirm_member},
+remark = #{remark, jdbcType=VARCHAR}, update_member = #{update_member}, update_date = now() 
+where request_no = #{request_no}
+</update>
+
+<update id="rejectRequest" parameterType="goodsreq">
+update point_goods_req set confirm_yn = #{confirm_yn}, confirm_member = #{confirm_member},
+remark = #{remark, jdbcType=VARCHAR}, update_member = #{update_member}, update_date = now(),
+refuse_yn = #{refuse_yn} where request_no = #{request_no}
+</update>
+
+<select id="findAllUnconfirmedRequest" parameterType="map" resultType="unconfirmedreq">
+select a.*,c.member_name,b.goods_name,c.total_point-c.req_point-c.use_point as available_point 
+from nordic.point_goods_req a inner join nordic.point_goods b on a.goods_no = b.goods_no 
+inner join nordic.member c on a.member_code = c.member_code 
+where confirm_yn = 'N' 
+<if test='all == null'>
+and a.use_yn = 'Y'
+</if>
+<if test='search != null and keyword != null and search == "goods_no"'>
+and b.goods_no like CONCAT('%',#{keyword},'%')
+</if>
+<if test='search != null and keyword != null and search == "goods_name"'>
+and b.goods_name like CONCAT('%',#{keyword},'%')
+</if>
+<if test='search != null and keyword != null and search == "member_code"'>
+and a.member_code like CONCAT('%',#{keyword},'%')
+</if>
+<if test='search != null and keyword != null and search == "member_name"'>
+and c.member_name like CONCAT('%',#{keyword},'%')
+</if>
+order by a.create_date desc
+</select>
+
+<select id="findAllRequest" resultType="goodsreq">
+select * from point_goods_req order by create_date desc
+</select>
+
+<select id="findAllConfirmedRequest" parameterType="Map" resultType="confirmedreq">
+select a.*,c.member_name,b.goods_name 
+from nordic.point_goods_req a inner join nordic.point_goods 
+b on a.goods_no = b.goods_no 
+inner join nordic.member c on a.member_code = c.member_code
+<where>
+confirm_yn = 'Y'
+<choose>
+<when test='search != null and keyword != null and search == "goods_no"'>
+ and b.goods_no like CONCAT('%',#{keyword},'%')
+</when>
+<when test='search != null and keyword != null and search == "goods_name"'>
+ and b.goods_name like CONCAT('%',#{keyword},'%')
+</when>
+<when test='search != null and keyword != null and search == "member_code"'>
+ and c.member_code like CONCAT('%',#{keyword},'%')
+</when>
+<when test='search != null and keyword != null and search == "member_name"'>
+ and c.member_name like CONCAT('%',#{keyword},'%')
+</when>
+<otherwise>
+and a.create_date between #{start} and #{end}
+<if test='yn != null and yn == "y"'>
+and refuse_yn = 'N'
+</if>
+<if test='yn != null and yn == "n"'>
+and refuse_yn = 'Y'
+</if>
+</otherwise>
+</choose>
+</where>
+order by a.update_date desc
+</select>
+
+<select id="findRequestsByGoods" parameterType="int" resultType="goodsreq">
+select * from point_goods_req where goods_no = #{no} order by create_date desc
+</select>
+
+<select id="myRequests" parameterType="String" resultType="confirmedreq">
+select a.*,c.member_name,b.goods_name 
+from nordic.point_goods_req a inner join nordic.point_goods 
+b on a.goods_no = b.goods_no 
+inner join nordic.member c on a.member_code = c.member_code 
+where a.member_code = #{member_code} order by a.create_date desc
+</select>
+
+<select id="duplicateRequestsCheck" parameterType="goodsreq" resultType="goodsreq">
+select * from point_goods_req where goods_no = #{goods_no} and 
+member_code = #{member_code} and confirm_yn = 'N' and use_yn = 'Y'
+</select>
+
+<update id="cancelRequest" parameterType="goodsreq">
+update point_goods_req set use_yn = 'N', update_member = #{update_member}, update_date = now() where request_no = #{request_no}
+</update>
+</mapper>
