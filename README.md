@@ -1,4 +1,3 @@
-# RestNordicBackUp
 ### 개발환경
 - Spring boot
 - Gradle
