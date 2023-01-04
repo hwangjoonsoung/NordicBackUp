@@ -50,4 +50,4 @@ cors : https://github.com/hwangjoonsoung/RestNordic/blob/develop/src/main/java/c
 snyk돌렸는데 발생한 보안취약점...insight는 못해봤다. fixed in이 알려준대로 했는데 빌드 불가능... 해결하자
 
 ### <p><b>front</b>
-front : https://github.com/hwangjoonsoung/RestNordicFront  
+https://github.com/hwangjoonsoung/RestNordicFront  
