@@ -29,13 +29,25 @@ nordic은 rest api를 이용한 노르딕워킹 동호회 웹 어플리케이션
 1. spring security를 해보고싶었는데 못했던 점...<br>
 2. 한번의 요청으로 image를 다수로 불러오고 싶었는데 실패...<br>
 3. DB 정규화 : 직렬화를 통해 1:N관계인 DB를 1:1로 변경함...<br>
-4. 하나의 문제에 너무 많은 시간을 할애함...<br>
+4. 리펙토링 하는 과정애서 필요없는 부분을 삭제를 한해서 스파게티코드가 되어버...<br>
+5. 하나의 문제에 너무 많은 시간을 할애함...<br>
 
 ### <p><b>프로젝트 작업 file</b>
 -controller<br>
-https://github.com/hwangjoonsoung/PEER/blob/develop/PEER/src/main/java/peer/controller/member<br>
+https://github.com/hwangjoonsoung/RestNordic/tree/develop/src/main/java/com/nordic/api/missionmaster<br>
+-service<br>
+https://github.com/hwangjoonsoung/RestNordic/tree/develop/src/main/java/com/nordic/service/missionmaster<br>
+-dao<br>
+https://github.com/hwangjoonsoung/RestNordic/tree/develop/src/main/java/com/nordic/repository/missionmasterrepo<br>
+-dto<br>
+https://github.com/hwangjoonsoung/RestNordic/tree/develop/src/main/java/com/nordic/dto/missionmasterbean<br>
+-config<br>
+swagger : https://github.com/hwangjoonsoung/RestNordic/blob/develop/src/main/java/com/nordic/config/SwaggerConfig.java<br>
+cors : https://github.com/hwangjoonsoung/RestNordic/blob/develop/src/main/java/com/nordic/config/security/CorsConfig.java<br>
 
 ### <p><b>snyk</b>
 ![image](https://user-images.githubusercontent.com/103257619/207895324-aea6a020-1e23-4ba5-b4da-d672a45b4d7c.png)  
-front : https://github.com/hwangjoonsoung/RestNordicFront  
 snyk돌렸는데 발생한 보안취약점...insight는 못해봤다. fixed in이 알려준대로 했는데 빌드 불가능... 해결하자
+
+### <p><b>front</b>
+front : https://github.com/hwangjoonsoung/RestNordicFront  
